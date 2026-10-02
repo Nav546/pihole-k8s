@@ -19,3 +19,14 @@ Client pod -> Pi-hole (Service: pihole) -> Unbound (Service: unbound, ClusterIP)
     kubectl apply -f manifests/pihole.yaml
     kubectl apply -f manifests/unbound-netpol.yaml
     kubectl port-forward svc/pihole 8080:80   # http://localhost:8080/admin
+
+> Apply Unbound before Pi-hole. Pi-hole gets Unbound's address from the `UNBOUND_SERVICE_HOST` variable, which Kubernetes only injects into pods created after the Service exists.
+
+## Verify the NetworkPolicy
+Direct query to Unbound from a random pod (should time out):
+
+    kubectl run dnstest --rm -it --image=busybox:1.36 --restart=Never -- timeout 10 nslookup google.com unbound
+
+Query through Pi-hole (should resolve):
+
+    kubectl run dnstest --rm -it --image=busybox:1.36 --restart=Never -- nslookup wikipedia.org pihole
