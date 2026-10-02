@@ -30,3 +30,8 @@ Direct query to Unbound from a random pod (should time out):
 Query through Pi-hole (should resolve):
 
     kubectl run dnstest --rm -it --image=busybox:1.36 --restart=Never -- nslookup wikipedia.org pihole
+
+## Proof it works
+Pi-hole query log: the lookup from the test pod is forwarded to Unbound's ClusterIP (10.96.85.71#53).
+
+![Pi-hole query log showing the query forwarded to Unbound](screenshots/query-log-forwarded.png)
